@@ -30,7 +30,7 @@ To deploy this laboratory on any Linux machine with Docker installed, execute th
 
 ```bash
 # 1. Clone the repository
-git clone [https://github.com/YOUR_USERNAME/mi-laboratorio-log4shell.git](https://github.com/YOUR_USERNAME/mi-laboratorio-log4shell.git)
+git clone https://github.com/MAFO-sec/mi-laboratorio-log4shell.git
 
 # 2. Navigate to the project directory
 cd mi-laboratorio-log4shell
