@@ -1,0 +1,43 @@
+#!/bin/bash
+
+VERDE='\033[0;32m'
+AZUL='\033[0;34m'
+NC='\033[0m'
+
+echo -e "${AZUL}[*] Configurando el escenario de Log4Shell...${NC}"
+
+# Guardamos la ruta raíz absoluta de tu proyecto
+RUTA_RAIZ=$(pwd)
+
+IP_DETECTADA=$(hostname -I | awk '{print $1}')
+echo -e "${VERDE}[+] Tu IP actual detectada es: $IP_DETECTADA${NC}"
+read -p "¿Es correcta? Presiona ENTER para usarla o escribe la IP manualmente: " IP_FINAL
+
+if [ -z "$IP_FINAL" ]; then
+    IP_FINAL=$IP_DETECTADA
+fi
+
+echo -e "${AZUL}[*] Aplicando la IP $IP_FINAL a la configuración...${NC}"
+
+# Crear archivos .env con rutas absolutas
+echo "IP_ATACANTE=$IP_FINAL" > "$RUTA_RAIZ/.env"
+echo "IP_ATACANTE=$IP_FINAL" > "$RUTA_RAIZ/atacante/.env"
+echo "IP_ATACANTE=$IP_FINAL" > "$RUTA_RAIZ/victima/.env"
+
+echo -e "${VERDE}[+] Archivos de entorno (.env) generados con éxito.${NC}"
+
+read -p "¿Deseas levantar todo el laboratorio ahora mismo? (s/n): " RESPUESTA
+
+if [[ "$RESPUESTA" =~ ^[Ss]$ ]]; then
+    echo -e "${AZUL}[*] Levantando entorno del ATACANTE (LDAP y Kali)...${NC}"
+    cd "$RUTA_RAIZ/atacante" && docker compose up -d --build
+    
+    echo -e "${AZUL}[*] Levantando entorno de la VÍCTIMA (App Vulnerable)...${NC}"
+    cd "$RUTA_RAIZ/victima" && docker compose up -d
+    
+    echo -e "${VERDE}[Validación] ¡Todo listo!${NC}"
+    echo "- Servidor LDAP y Kali listos."
+    echo "- App vulnerable corriendo."
+else
+    echo -e "${AZUL}[*] Configuración guardada.${NC}"
+fi

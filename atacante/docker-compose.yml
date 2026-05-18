@@ -1,0 +1,41 @@
+services:
+  kali-tools:
+    build:
+      context: .
+      dockerfile: Dockerfile.kali
+    container_name: kali-tools
+    networks:
+      red-log4shell:
+        aliases:
+          - kali-tools
+    ports:
+      - "8000:8000"
+      - "4444:4444"
+    tty: true
+
+  ldap-malicioso:
+    build:
+      context: .
+      dockerfile: Dockerfile.ldap
+    container_name: ldap-malicioso
+    networks:
+      - red-log4shell
+    ports:
+      - "1389:1389"
+      - "8180:8180"
+
+  web-vulnerable:
+    build:
+      context: ../victima
+      dockerfile: Dockerfile
+    container_name: web-vulnerable
+    networks:
+      - red-log4shell
+    ports:
+      - "8080:8080"
+    environment:
+      - JAVA_TOOL_OPTIONS=-Dcom.sun.jndi.ldap.object.trustURLCodebase=true -Dcom.sun.jndi.rmi.object.trustURLCodebase=true
+
+networks:
+  red-log4shell:
+    driver: bridge

