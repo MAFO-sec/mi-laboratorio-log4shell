@@ -24,6 +24,24 @@ The laboratory creates an isolated bridge network (`red-log4shell`) with three k
 
 ---
 
+## ⚙️ Quick Start
+
+To deploy this laboratory on any Linux machine with Docker installed, execute the following commands in your terminal:
+
+```bash
+# 1. Clone the repository
+git clone [https://github.com/YOUR_USERNAME/mi-laboratorio-log4shell.git](https://github.com/YOUR_USERNAME/mi-laboratorio-log4shell.git)
+
+# 2. Navigate to the project directory
+cd mi-laboratorio-log4shell
+
+# 3. Grant execution permissions to the script manager and launch the lab
+chmod +x configurar.sh
+./configurar.sh
+```
+
+---
+
 ## ⚠️ Disclaimer
 
 This repository is created strictly for **educational purposes, security research, and authorized academic auditing**. Never execute these tools or attack infrastructure without explicit, prior written authorization from the infrastructure owners.
